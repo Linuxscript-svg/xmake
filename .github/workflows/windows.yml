@@ -66,14 +66,6 @@ jobs:
           xmake -vD
           cd ..
 
-      - name: Artifact
-        run: |
-          cd core
-          xrepo update-repo
-          xmake pack -vD -y --formats=nsis,zip --autobuild=n -o ../artifacts/${{env.RELEASE_NAME}} --basename=xmake xmake
-          (Get-FileHash ../artifacts/${{env.RELEASE_NAME}}/xmake.zip -Algorithm SHA256).Hash.ToLower() + " *xmake.zip`n" | Out-File ./shafile -Encoding ASCII -NoNewLine -Append
-          Copy-Item shafile ../artifacts/${{env.RELEASE_NAME}}
-          cd ..
 
       - name: Tests
         if: matrix.arch != 'arm64'
@@ -95,13 +87,6 @@ jobs:
         with:
           name: xmake-latest.${{env.RELEASE_NAME}}.exe
           path: artifacts/${{env.RELEASE_NAME}}/xmake.exe
-
-      - name: Upload artifacts (zip)
-        if: matrix.os == 'windows-2025'
-        uses: actions/upload-artifact@v4
-        with:
-          name: xmake-latest.${{ env.RELEASE_NAME }}.zip
-          path: artifacts/${{env.RELEASE_NAME}}/xmake.zip
 
       - name: Upload artifacts (sha256)
         if: matrix.os == 'windows-2025'
